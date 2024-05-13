@@ -1,0 +1,10 @@
+Django==4.2
+openai==1.28.1
+django-environ
+
+djangorestframework~=3.11.1
+django-cors-headers~=3.4.0
+
+# python3 -m venv venv  
+# source venv/bin/activate
+# install -r requirements.txt  
