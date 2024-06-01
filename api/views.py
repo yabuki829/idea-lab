@@ -11,9 +11,9 @@ def index(request):
     client = OpenAI(api_key=settings.API_KEY)   
 
 
-    category = "" # 事業,サービス、
-    idea = ""   # ユーザーに入力
-    target = "" # ユーザーに入力
+    category = "ゲーム" # 事業,サービス、ゲーム
+    idea = "謎解き、犯人探し"   # ユーザーに入力
+    target = "みんなで遊ぶ" # ユーザーに入力
     completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
@@ -41,7 +41,7 @@ def index(request):
 
     data = json.loads(completion.choices[0].message.content)
 
-# 各サービスのタイトルと説明を出力
+    # 各サービスのタイトルと説明を出力
     for service in data['results']:
         print(f"{service['title']}")
         print(f"{service['explain']}\n")

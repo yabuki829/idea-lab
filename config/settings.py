@@ -24,6 +24,8 @@ SECRET_KEY = 'django-insecure-+i@sfzz&nyo5a7tpobe^76y4h@6l48$-a=@&tu02sj()h#00+d
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+from decouple import config
+from dj_database_url import parse as dburl
 
 import environ
 import os
@@ -32,7 +34,8 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 
 API_KEY = env('API_KEY')
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ["*"]
 
 
 
@@ -47,9 +50,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "api",
+    "rest_framework.authtoken",
+    "djoser",
+    "accounts",
+    "cloudinary",
+    "cloudinary_storage",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,12 +93,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+default_dburl = "sqlite:///" + str(BASE_DIR / "db.sqlite3")
+
+# 本場環境では、DATABASE_URLにPostgreSQLのURLを指定する
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": config("DATABASE_URL", default=default_dburl, cast=dburl),
 }
+
 
 
 # Password validation
@@ -113,9 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "ja"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Asia/Tokyo"
 
 USE_I18N = True
 
@@ -125,9 +136,104 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
 
+STATIC_URL = "static/"
+STATIC_ROOT = str(BASE_DIR / "staticfiles")
+MEDIA_URL = "/media/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# 画像はCLOUDINARY_STORAGEに保存する
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": env("CLOUDINARY_NAME"),
+    "API_KEY": env("CLOUDINARY_API_KEY"),
+    "API_SECRET": env("CLOUDINARY_API_SECRET"),
+}
+
+# メールの設定
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = 587
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+
+REST_FRAMEWORK = {
+    # 認証が必要
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    # JWT認証
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    # 日付
+    "DATETIME_FORMAT": "%Y/%m/%d %H:%M",
+}
+
+from datetime import timedelta
+# JWT設定
+SIMPLE_JWT = {
+    # アクセストークン(1日)
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    # リフレッシュトークン(5日)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
+    # 認証タイプ
+    "AUTH_HEADER_TYPES": ("JWT",),
+    # 認証トークン
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+}
+
+
+DJOSER = {
+    # メールアドレスでログイン
+    "LOGIN_FIELD": "email",
+    # アカウント本登録メール
+    "SEND_ACTIVATION_EMAIL": True,
+    # アカウント本登録完了メール
+    "SEND_CONFIRMATION_EMAIL": True,
+    # メールアドレス変更完了メール
+    "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
+    # パスワード変更完了メール
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    # アカウント登録時に確認用パスワード必須
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    # メールアドレス変更時に確認用メールアドレス必須
+    "SET_USERNAME_RETYPE": True,
+    # パスワード変更時に確認用パスワード必須
+    "SET_PASSWORD_RETYPE": True,
+    # アカウント本登録用URL
+    "ACTIVATION_URL": "signup/{uid}/{token}",
+    # パスワードリセット完了用URL
+    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
+    # カスタムユーザー用シリアライザー
+    "SERIALIZERS": {
+        "user_create": "accounts.serializers.UserSerializer",
+        "user": "accounts.serializers.UserSerializer",
+        "current_user": "accounts.serializers.UserSerializer",
+    },
+    "EMAIL": {
+        # アカウント本登録
+        "activation": "accounts.email.ActivationEmail",
+        # アカウント本登録完了
+        "confirmation": "accounts.email.ConfirmationEmail",
+        # パスワード再設定
+        "password_reset": "accounts.email.ForgotPasswordEmail",
+        # パスワード再設定確認
+        "password_changed_confirmation": "accounts.email.ResetPasswordEmail",
+    },
+}
+
+# ユーザーモデル
+AUTH_USER_MODEL = "accounts.UserAccount"
+
+# サイト設定
+SITE_DOMAIN = env("SITE_DOMAIN")
+SITE_NAME = env("SITE_NAME")
