@@ -3,5 +3,5 @@ from accounts import views
 
 urlpatterns = [
     # ユーザー詳細
-    path("user/<uid>/", views.UserDetailView.as_view()),
+    path("users/<uid>/", views.UserDetailView.as_view()),
 ]
