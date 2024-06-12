@@ -1,9 +1,14 @@
-
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from . import views
 
-urlpatterns = [
-    path('test/',views.index,name="index" ),
+router = routers.DefaultRouter()
+router.register("posts", views.IdeaPostViewSet)
 
+urlpatterns = [
+    path('test/', views.index, name="index"),
+    path('idea-list/', views.IdeaListView.as_view()),
+    path('idea-details/<id>/', views.index),
+    path("", include(router.urls)),
 ]

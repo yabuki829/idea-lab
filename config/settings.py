@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "api",
     "accounts",
+    "rest_framework",
     "rest_framework.authtoken",
     "djoser",
     "cloudinary",

@@ -1,56 +1,56 @@
-from django.shortcuts import render
-
 # Create your views here.
 from django.http import HttpResponse
-from django.conf import settings
-from openai import OpenAI
-import json
 
+from api.models import Idea,Tag
+from utils.Ideas import IdeaManager
+from django.contrib.auth import get_user_model
+from .serializers import IdeaSerializer
+from rest_framework.permissions import AllowAny
+from rest_framework.viewsets import ModelViewSet
 
+User = get_user_model()
 def index(request):
-    client = OpenAI(api_key=settings.API_KEY)   
-
-
-    category = "ゲーム" # 事業,サービス、ゲーム
-    idea = "謎解き、犯人探し"   # ユーザーに入力
-    target = "みんなで遊ぶ" # ユーザーに入力
-    completion = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {"role": "system", "content": "あなたは一流のWebサービスの企画担当で、独創的で、まだ誰も思いついていないような、新しいサービスや事業やアイデアなどを考えることができます。"},
-        {"role": "user", "content": 
-            f"""
-            アイデアのタイトルと説明を水平思考で考え2つ出してください。
-            # カテゴリ
-            {category}+"に特化したものを考えてください"
-            
-            # アイデア
-            {idea}+"を含ませてください"
-            # 情報
-            ・ターゲット：{target}
-            
-            以下のように出力してください
-            サービスのタイトル(title)そのサービスの詳しい説明やアイデア(explain)をjson形式で出力してください
-            "results":[{{"title":"", "explain":""}}, {{"title":"", "explain":""}}]
-            """}
-            ],
-
-            response_format={"type": "json_object"}
-    )
-
-
-    data = json.loads(completion.choices[0].message.content)
-
+    manager = IdeaManager()
+    data = manager.create_ideas()
     # 各サービスのタイトルと説明を出力
     for service in data['results']:
-        print(f"{service['title']}")
-        print(f"{service['explain']}\n")
+        title = service['title']
+        description = service['explain']
+        print("-------------------------------------")
+        print("|",title,"|")
+        print("-------------------------------------")
+        print(description)
+        print("-------------------------------------")
+
+        user = User.objects.get(uid="g5KNDdqB")
+        Idea.objects.create(title=title,description=description,user=user).save()
+    # シリアライザーを作成した方がいいか考える
    
-    return HttpResponse(completion.choices[0].message.content)
+    return HttpResponse(data["results"])
+
+
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 
 
-# 一覧view  
-def top(request):
-    pass
-     
+class IdeaListView(ListAPIView):
+    # 更新日時で降順に並べ替え
+    queryset = Idea.objects.all().order_by("-updated_at")
+    serializer_class = IdeaSerializer
+    # どのユーザーでもアクセス可能
+    permission_classes = (AllowAny,)
+
+
+
+class IdeaPostViewSet(ModelViewSet):
+    queryset = Idea.objects.all()
+    serializer_class = IdeaSerializer
+    lookup_field = "id" 
+
+    def perform_create(self, serializer, **kwargs):
+        # 投稿を作成するユーザーを設定
+        print("ここまでおk")
+        print(self.request.data)
+        tag_title = self.request.data.get('tag')  # リクエストからタグのタイトルを取得
+        tag, created = Tag.objects.get_or_create(title=tag_title)  # タグが存在しなければ新しく作成
+        serializer.save(user=self.request.user, tag=tag)  # 

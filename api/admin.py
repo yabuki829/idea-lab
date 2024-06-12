@@ -1,3 +1,13 @@
 from django.contrib import admin
 
 # Register your models here.
+from .models import Idea
+from django.contrib import admin
+from .models import Idea,Tag
+
+class IdeaAdmin(admin.ModelAdmin):
+    exclude = ('id',)
+    list_display = ('id', 'title', 'description', 'updated_at', 'created_at') 
+
+admin.site.register(Idea, IdeaAdmin)
+admin.site.register(Tag)
