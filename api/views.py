@@ -42,6 +42,12 @@ class IdeaListView(ListAPIView):
 
 
 
+class IdeaDetailView(RetrieveAPIView):
+    queryset = Idea.objects.all()
+    serializer_class = IdeaSerializer
+    permission_classes = (AllowAny,)
+    lookup_field = "id"
+
 class IdeaPostViewSet(ModelViewSet):
     queryset = Idea.objects.all()
     serializer_class = IdeaSerializer

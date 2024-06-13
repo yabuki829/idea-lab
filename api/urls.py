@@ -9,6 +9,6 @@ router.register("posts", views.IdeaPostViewSet)
 urlpatterns = [
     path('test/', views.index, name="index"),
     path('idea-list/', views.IdeaListView.as_view()),
-    path('idea-details/<id>/', views.index),
+    path('idea-detail/<id>/', views.IdeaDetailView.as_view()),
     path("", include(router.urls)),
 ]
