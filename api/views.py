@@ -7,27 +7,32 @@ from django.contrib.auth import get_user_model
 from .serializers import IdeaSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
-
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 User = get_user_model()
+
+
+@csrf_exempt
 def index(request):
+
+    data = json.loads(request.body)
+    word = data.get('word', '')
     manager = IdeaManager()
-    data = manager.create_ideas()
-    # 各サービスのタイトルと説明を出力
-    for service in data['results']:
-        title = service['title']
-        description = service['explain']
-        print("-------------------------------------")
-        print("|",title,"|")
-        print("-------------------------------------")
-        print(description)
-        print("-------------------------------------")
+    print(word)
+    data = manager.create_ideas(word)
 
-        user = User.objects.get(uid="g5KNDdqB")
-        Idea.objects.create(title=title,description=description,user=user).save()
+        
     # シリアライザーを作成した方がいいか考える
-   
-    return HttpResponse(data["results"])
+    print(data["results"])
+    # return HttpResponse(data["results"])
+    return JsonResponse(data["results"])
+    return JsonResponse({'title': '知恵の泉', 'discription': '「知恵の泉」は、勉強や遊びの要素を組み合わせた新しい学習体験を提供するサービスです。ユーザーは、問題解決やクイズ形式のゲームを通じて学習し、知識を深めることができます。また、他のユーザーと競い合ったり、協力したりしながら楽しみながら成長できる環境を提供しています。知識獲得だけでなく、頭の体操やクリエイティブな思考力の向上にも役立つサービスです。'})
 
+import os
+def test(requeat):
+
+    return HttpResponse("テスト")    
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
