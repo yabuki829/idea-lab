@@ -34,3 +34,18 @@ class Idea(models.Model):
         super(Idea, self).save(*args, **kwargs)
 
 
+
+class Notice(models.Model):
+    id = models.CharField(max_length=5, unique=True, primary_key=True)
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created_at = models.DateTimeField("作成日", auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            hashids = Hashids(salt="xRXSMT8XpzdUbDNM9qkv6raerwre3223", min_length=5)
+            self.id = hashids.encode(int(time.time() * 1000))
+        super(Notice, self).save(*args, **kwargs)

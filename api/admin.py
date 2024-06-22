@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import Idea
 from django.contrib import admin
-from .models import Idea,Tag
+from .models import Idea,Tag,Notice
 
 class IdeaAdmin(admin.ModelAdmin):
     exclude = ('id',)
@@ -11,3 +11,10 @@ class IdeaAdmin(admin.ModelAdmin):
 
 admin.site.register(Idea, IdeaAdmin)
 admin.site.register(Tag)
+
+
+class NoticeAdmin(admin.ModelAdmin):
+    exclude = ('id',)
+    list_display = ('id', 'title', 'content', 'created_at') 
+admin.site.register(Notice,NoticeAdmin)
+

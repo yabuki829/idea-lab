@@ -11,5 +11,6 @@ urlpatterns = [
     path('generate/idea/', views.index, name="index"),
     path('idea/list/', views.IdeaListView.as_view()),
     path('idea/<id>/', views.IdeaDetailView.as_view()),
+    path('news/', views.NoticeListView.as_view()),
     path("", include(router.urls)),
 ]
