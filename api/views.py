@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from api.models import Idea,Tag,Notice
 from utils.Ideas import IdeaManager
 from django.contrib.auth import get_user_model
-from .serializers import IdeaSerializer,NoticeSerializer
+from .serializers import IdeaSerializer,NoticeSerializer,TagSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from django.http import JsonResponse
@@ -48,6 +48,32 @@ class NoticeListView(ListAPIView):
     serializer_class = NoticeSerializer
     
     permission_classes = (AllowAny,)
+
+
+class NoticeDetailView(RetrieveAPIView):
+    queryset = Notice.objects.all()
+    serializer_class = NoticeSerializer
+    permission_classes = (AllowAny,)
+    lookup_field = "id"
+
+# tagの一覧表示
+class TagListView(ListAPIView):
+    
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    
+    permission_classes = (AllowAny,)
+
+
+
+
+class TagIdeaListView(ListAPIView):
+    serializer_class = IdeaSerializer
+    permission_classes = (AllowAny,)
+    def get_queryset(self):
+        
+        tag_title = self.kwargs['tag_title']
+        return Idea.objects.filter(tag__title=tag_title)
 
 
 

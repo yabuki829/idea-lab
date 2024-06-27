@@ -2,7 +2,7 @@ from rest_framework import serializers
 from accounts.serializers import UserSerializer
 from config.utils import Base64ImageField
 from rest_framework.viewsets import ModelViewSet
-from api.models import Idea,Notice
+from api.models import Idea,Notice,Tag
 
 
 
@@ -18,8 +18,12 @@ class IdeaSerializer(serializers.ModelSerializer):
 
 class NoticeSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-   
 
     class Meta:
         model = Notice
+        fields = "__all__"
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
         fields = "__all__"
