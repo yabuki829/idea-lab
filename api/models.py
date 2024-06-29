@@ -21,7 +21,7 @@ class Idea(models.Model):
     created_at = models.DateTimeField("作成日", auto_now_add=True)
 
     pre_idea = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
-
+    views = models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.title
 
@@ -33,7 +33,16 @@ class Idea(models.Model):
             self.id = hashids.encode(int(time.time() * 1000))
         super(Idea, self).save(*args, **kwargs)
 
+class History(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE)
+    idea = models.ForeignKey(Idea, verbose_name="アイデア", on_delete=models.CASCADE)
+    timestamp = models.DateTimeField("閲覧日時", auto_now_add=True)
 
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return str(self.timestamp)
 
 class Notice(models.Model):
     id = models.CharField(max_length=5, unique=True, primary_key=True)
