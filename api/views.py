@@ -14,12 +14,13 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from rest_framework import status
+
 from datetime import datetime
 User = get_user_model()
 
 
 # 全部APIViewに書き換える
-
+from .paginations import IdeaPagination
 
 @csrf_exempt
 def index(request):
@@ -48,6 +49,7 @@ class IdeaListView(ListAPIView):
     serializer_class = IdeaSerializer
     # どのユーザーでもアクセス可能にする
     permission_classes = (AllowAny,)
+    pagination_class = IdeaPagination
 
 # お知らせの一覧表示
 class NoticeListView(ListAPIView):
