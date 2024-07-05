@@ -45,7 +45,7 @@ class History(models.Model):
         return str(self.timestamp)
 
 class Notice(models.Model):
-    id = models.CharField(max_length=5, unique=True, primary_key=True)
+    id = models.CharField(max_length=10, unique=True, primary_key=True)
     title = models.CharField(max_length=255)
     content = models.TextField()
     created_at = models.DateTimeField("作成日", auto_now_add=True)
