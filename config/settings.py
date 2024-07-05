@@ -34,6 +34,8 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 
 API_KEY = env('API_KEY')
 GEMINI_API_KEY = env('GEMINI_API_KEYT')
+FRONTEND_URL=env("FRONTEND_URL")
+
 
 ALLOWED_HOSTS = ["*"]
 
@@ -70,6 +72,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+    # FRONTEND_URL
+     
+]
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -89,6 +98,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 # Database
@@ -100,6 +110,7 @@ default_dburl = "sqlite:///" + str(BASE_DIR / "db.sqlite3")
 DATABASES = {
     "default": config("DATABASE_URL", default=default_dburl, cast=dburl),
 }
+
 
 
 
@@ -245,3 +256,7 @@ AUTH_USER_MODEL = "accounts.UserAccount"
 # サイト設定
 SITE_DOMAIN = env("SITE_DOMAIN")
 SITE_NAME = env("SITE_NAME")
+
+SUPERUSER_EMAIL=env("SUPERUSER_EMAIL")
+SUPER_USERNANE=env("SUPER_USERNANE")
+SUPERUSER_PASSWORD=env("SUPERUSER_PASSWORD")

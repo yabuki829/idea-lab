@@ -39,13 +39,14 @@ def index(request):
     
 import os
 
-
+# 
 def test(request):
     # data = json.loads(request.body)
     # word = data.get('word', '')
-    manager = IdeaManager()
-    data = manager.create_ideas_with_gemini("運動")
-    print(data["results"])
+    # manager = IdeaManager()
+    # data = manager.create_ideas_with_gemini("運動")
+    # print(data["results"])
+    return HttpResponse("サーバーは正常に動作しています")
     return JsonResponse(data["results"])
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView
