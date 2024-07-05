@@ -16,6 +16,9 @@ Pillow==10.1.0
 
 gunicorn==20.1.0
 psycopg2-binary
+whitenoise
+dj-static
+python-decouple
 
 google-generativeai
 
