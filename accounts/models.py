@@ -36,7 +36,7 @@ class UserManager(BaseUserManager):
         user.save()
 
         return user
-
+from cloudinary.models import CloudinaryField
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     uid = models.CharField("uid", max_length=30, unique=True)

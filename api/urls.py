@@ -7,6 +7,7 @@ router = routers.DefaultRouter()
 router.register("posts", views.IdeaPostViewSet)
 
 urlpatterns = [
+    path('test/', views.test, name="test"),
     path('generate/idea/', views.index, name="index"),
     path('idea/list/', views.IdeaListView.as_view()),
     path('idea/recommend/', views.RecommendAPIView.as_view()),

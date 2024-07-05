@@ -2,6 +2,7 @@
 from django.http import HttpResponse
 
 from api.models import Idea,Tag,Notice,History
+from accounts.serializers import UserSerializer
 from utils.Ideas import IdeaManager
 from django.contrib.auth import get_user_model
 from .serializers import IdeaSerializer,NoticeSerializer,TagSerializer
@@ -15,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from rest_framework import status
 
+
 from datetime import datetime
 User = get_user_model()
 
@@ -22,13 +24,14 @@ User = get_user_model()
 # 全部APIViewに書き換える
 from .paginations import IdeaPagination
 
+# アイデア生成のview
 @csrf_exempt
 def index(request):
     data = json.loads(request.body)
     word = data.get('word', '')
     manager = IdeaManager()
     print(word)
-    data = manager.create_ideas(word)
+    data = manager.create_ideas_with_gemini(word)
 
         
     print(data["results"])
@@ -36,8 +39,14 @@ def index(request):
     
 import os
 
-def test(requeat):
-    return HttpResponse("テスト")    
+
+def test(request):
+    # data = json.loads(request.body)
+    # word = data.get('word', '')
+    manager = IdeaManager()
+    data = manager.create_ideas_with_gemini("運動")
+    print(data["results"])
+    return JsonResponse(data["results"])
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
@@ -121,6 +130,7 @@ class IdeaDetailView(APIView):
                 history.save()  
 
         return Response(serializer.data)
+    
 
 class IdeaPostViewSet(ModelViewSet):
     queryset = Idea.objects.all()
@@ -170,7 +180,6 @@ class RecommendAPIView(APIView):
        
 
             print(all_tags)
-            # タグの出現回数を数えて、上位2件を取得
             top_tags = Counter(all_tags).most_common(1)
             print("タグの上位",top_tags)
             random_tag = random.choice(top_tags)[0]

@@ -33,7 +33,7 @@ env = environ.Env()
 env.read_env(os.path.join(BASE_DIR, '.env'))
 
 API_KEY = env('API_KEY')
-
+GEMINI_API_KEY = env('GEMINI_API_KEYT')
 
 ALLOWED_HOSTS = ["*"]
 
@@ -155,6 +155,12 @@ CLOUDINARY_STORAGE = {
     "API_KEY": env("CLOUDINARY_API_KEY"),
     "API_SECRET": env("CLOUDINARY_API_SECRET"),
 }
+import cloudinary
+cloudinary.config( 
+  cloud_name = os.getenv('CLOUDINARY_NAME'), 
+  api_key = os.getenv('CLOUDINARY_API_KEY'), 
+  api_secret = os.getenv('CLOUDINARY_API_SECRET') 
+)
 
 # メールの設定
 EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
