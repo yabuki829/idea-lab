@@ -51,7 +51,7 @@ class IdeaManager():
         category = "サービス" # 事業,サービス、ゲーム
         idea = word  # ユーザーに入力
         count =  1
-        response = model.generate_content({f"""
+        prompt = {f"""
             "You are a top-tier web service planner, capable of devising original new services, businesses, and ideas.
              Please provide {count} titles and descriptions for ideas using lateral thinking
                 Please consider specializing in {category}
@@ -61,8 +61,48 @@ class IdeaManager():
                 以下のように出力してください
                 サービスのタイトル(title)そのサービスの詳しい説明(description)をjson形式で日本語で出力してください
                 "results":{{"title":"", "description":""}},
-        """})
+        """}
+        
+        response = model.generate_content(prompt)
         data = json.loads(response.text)
+   
+        return data
+    
+    def create_monetization_with_gemini(self,title,description):
+        print("Gemini AI")
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        model = genai.GenerativeModel(
+            "gemini-1.5-flash",
+            generation_config={"response_mime_type": "application/json"}
+            )
+      
+
+        prompt = f"""
+            #お願い
+            あなたは一流のWebサービスのマネタイズ担当です。マネタイズ方法を出してください。
+            # 内容
+            タイトル: {title}
+            内容: {description}
+            この内容のマネタイズ方法を考えてください
+
+            以下のように出力してください
+            サービスのマネタイズ方法(description)をjson形式で日本語で出力してください
+            "results": {{"description": ""}},
+        """
+        
+        response = model.generate_content(prompt)
+        try:
+           
+            safe_response_text = response.text.encode('unicode_escape').decode('utf-8') 
+           
+            print(safe_response_text)
+            data = json.loads(response.text)
+        except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e}")
+            print("エラーです")
+            print(response.text)
+            data = {"error": "Invalid JSON response"}
+        
         print(data)
         return data
 

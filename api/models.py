@@ -29,7 +29,7 @@ class Idea(models.Model):
     # 保存するときに現在時刻をもとにハッシュ値を作成する
     def save(self, *args, **kwargs):
         if not self.id:
-            hashids = Hashids(salt="xRXSMT8XpzdUbDNM9qkv6raerwre3223", min_length=8)
+            hashids = Hashids(salt="xRXSMT8XpzdUbDNM9qkv6raerwre3223", min_length=12)
             self.id = hashids.encode(int(time.time() * 1000))
         super(Idea, self).save(*args, **kwargs)
 
@@ -58,3 +58,18 @@ class Notice(models.Model):
             hashids = Hashids(salt="xRXSMT8XpzdUbDNM9qkv6raerwre3223", min_length=5)
             self.id = hashids.encode(int(time.time() * 1000))
         super(Notice, self).save(*args, **kwargs)
+
+# アイデアのマネタイズ方法
+class Monetization(models.Model):
+    id = models.CharField(max_length=20, unique=True, primary_key=True)
+    idea = models.ForeignKey(Idea, verbose_name="アイデア", on_delete=models.CASCADE)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.id
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            hashids = Hashids(salt="xRXSMT8XpzdUbDNM9qkv6raerwre3223", min_length=10)
+            self.id = hashids.encode(int(time.time() * 1000))
+        super(Monetization, self).save(*args, **kwargs)
