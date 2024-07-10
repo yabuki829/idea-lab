@@ -74,7 +74,7 @@ class IdeaManager():
         model = genai.GenerativeModel(
             "gemini-1.5-flash",
             generation_config={"response_mime_type": "application/json"}
-            )
+        )
       
 
         prompt = f"""
@@ -83,7 +83,8 @@ class IdeaManager():
             # 内容
             タイトル: {title}
             内容: {description}
-            この内容のマネタイズ方法を考えてください
+            一番良いマネタイズ方法を考えてください。
+            改行を入れて読みやすいようにしてください。
 
             以下のように出力してください
             サービスのマネタイズ方法(description)をjson形式で日本語で出力してください
@@ -92,18 +93,13 @@ class IdeaManager():
         
         response = model.generate_content(prompt)
         try:
-           
             safe_response_text = response.text.encode('unicode_escape').decode('utf-8') 
-           
-            print(safe_response_text)
             data = json.loads(response.text)
         except json.JSONDecodeError as e:
             print(f"JSONDecodeError: {e}")
             print("エラーです")
-            print(response.text)
             data = {"error": "Invalid JSON response"}
         
-        print(data)
         return data
 
     

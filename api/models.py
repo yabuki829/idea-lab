@@ -66,7 +66,7 @@ class Monetization(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return self.id
+        return self.idea.title
     
     def save(self, *args, **kwargs):
         if not self.id:
