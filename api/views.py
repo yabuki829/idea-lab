@@ -20,7 +20,7 @@ from datetime import datetime
 User = get_user_model()
 
 
-# 全部APIViewに書き換える
+# TODO: 全部APIViewに書き換える
 from .paginations import IdeaPagination
 
 
@@ -274,4 +274,8 @@ class RecommendAPIView(APIView):
 class ManatizeAPIView(APIView):
     def get(self,request):
         # アイデアのマネタイズを取得する
+        pass
+
+class CommentAPIView(APIView):
+    def post(self,request):
         pass

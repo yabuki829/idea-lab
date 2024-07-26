@@ -73,3 +73,16 @@ class Monetization(models.Model):
             hashids = Hashids(salt="xRXSMT8XpzdUbDNM9qkv6raerwre3223", min_length=10)
             self.id = hashids.encode(int(time.time() * 1000))
         super(Monetization, self).save(*args, **kwargs)
+
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="ユーザー", on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField("作成日", auto_now_add=True)
+    idea = models.ForeignKey(Idea, verbose_name="アイデア", on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.text
+    
